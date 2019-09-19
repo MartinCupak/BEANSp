@@ -3,8 +3,9 @@ from __future__ import print_function
 
 import ctypes as ct
 import numpy
+import pathlib
 
-class settle(object):
+class Settle(object):
     '''
     Super basic interface to settle code
     '''
@@ -30,13 +31,14 @@ class settle(object):
         full: calls settle with all arguments, in case you want to change paramenters,
               it overrides the default F and C, but does not overwrite them
               Takes f, m, x, z, c
-              Returns alpha, trec
+              Returns alpha, trec, fluence
         run : more compact call, which assumes f and c from initialization.
               Takes m, x, and z
-              Returns alpha, trec
+              Returns alpha, trec, fluence
         '''
 
-        self.libsettle = ct.cdll.LoadLibrary("libsettle.so")
+        path_to_data_file = pathlib.Path(__file__).resolve().parent.parent / "settle" / "libsettle.so"
+        self.libsettle = ct.cdll.LoadLibrary(path_to_data_file)
 
         self.mainer = self.libsettle.mainer
 
@@ -76,7 +78,9 @@ class settle(object):
                                   ct.byref(ct.c_double(X[i])),
                                   ct.byref(ct.c_double(M[i])),
                                   ct.byref(self.C),
-                                  ct.byref(T), ct.byref(A), ctbyref(E),
+                                  ct.byref(T), 
+                                  ct.byref(A), 
+                                  ctbyref(E),
                                   ct.byref(ct.c_double(R[i])),
                                   ct.byref(ct.c_double(Ma[i])))
 
@@ -92,7 +96,9 @@ class settle(object):
                               ct.byref(ct.c_double(X)),
                               ct.byref(ct.c_double(M)),
                               ct.byref(self.C),
-                              ct.byref(T), ct.byref(A), ct.byref(E),
+                              ct.byref(T), 
+                              ct.byref(A), 
+                              ct.byref(E),
                               ct.byref(ct.c_double(R)),
                               ct.byref(ct.c_double(Ma)))
 
@@ -122,7 +128,9 @@ class settle(object):
                                   ct.byref(ct.c_double(X[i])),
                                   ct.byref(ct.c_double(M[i])),
                                   ct.byref(ct.c_double(C[i])),
-                                  ct.byref(T), ct.byref(A), ctbyref(E),
+                                  ct.byref(T), 
+                                  ct.byref(A), 
+                                  ct.byref(E),
                                   ct.byref(ct.c_double(R[i])),
                                   ct.byref(ct.c_double(Ma[i])))
 
@@ -139,7 +147,9 @@ class settle(object):
                               ct.byref(ct.c_double(X)),
                               ct.byref(ct.c_double(M)),
                               ct.byref(ct.c_int(C)),
-                              ct.byref(T), ct.byref(A), ct.byref(E),
+                              ct.byref(T), 
+                              ct.byref(A), 
+                              ct.byref(E),
                               ct.byref(ct.c_double(R)),
                               ct.byref(ct.c_double(Ma)))
 
